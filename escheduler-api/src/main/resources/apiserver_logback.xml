@@ -4,7 +4,8 @@
  	<logger name="org.apache.hbase" level="WARN"/>
  	<logger name="org.apache.hadoop" level="WARN"/>
 
-	<property name="log.base" value="logs" />
+	<property name="log.base" value="${escheduler.home:-.}/logs" />
+	<property name="log.file" value="${log.file:-escheduler-api-server.log}" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -20,7 +21,7 @@
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>INFO</level>
 		</filter>
-        <file>${log.base}/escheduler-api-server.log</file>
+        <file>${log.base}/${log.file}</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<fileNamePattern>${log.base}/escheduler-api-server.%d{yyyy-MM-dd_HH}.%i.log</fileNamePattern>
 			<maxHistory>168</maxHistory>
@@ -37,6 +38,7 @@
 	</appender>
 
 	<root level="INFO">
+		<appender-ref ref="STDOUT" />
 		<appender-ref ref="APISERVERLOGFILE" />
 	</root>
 </configuration>

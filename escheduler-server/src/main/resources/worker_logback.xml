@@ -1,6 +1,8 @@
 <!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
-<configuration scan="true" scanPeriod="120 seconds">
-    <property name="log.base" value="logs"/>
+<configuration scan="true" scanPeriod="120 seconds" debug="false">
+    <logger name="org.apache.zookeeper.ClientCnxn" level="INFO"/>
+    <property name="log.base" value="${escheduler.home:-.}/logs" />
+    <property name="log.file" value="${log.file:-escheduler-worker.log}" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
@@ -25,7 +27,7 @@
     </appender>
 
     <appender name="WORKERLOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.base}/escheduler-worker.log</file>
+        <file>${log.base}/${log.file}</file>
         <filter class="cn.escheduler.server.worker.log.WorkerLogFilter">
             <level>INFO</level>
         </filter>
@@ -47,7 +49,7 @@
 
 
     <root level="INFO">
-        <appender-ref ref="TASKLOGFILE"/>
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="WORKERLOGFILE"/>
     </root>
 </configuration>

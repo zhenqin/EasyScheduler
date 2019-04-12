@@ -1,6 +1,9 @@
 <!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
 <configuration scan="true" scanPeriod="120 seconds"> <!--debug="true" -->
-	<property name="log.base" value="logs" />
+	<logger name="org.apache.zookeeper.ClientCnxn" level="INFO"/>
+	<property name="log.base" value="${escheduler.home:-.}/logs" />
+	<property name="log.file" value="${log.file:-escheduler-master.log}" />
+
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
@@ -11,7 +14,7 @@
 	</appender>
 
 	<appender name="MASTERLOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.base}/escheduler-master.log</file>
+		<file>${log.base}/${log.file}</file>
 		<filter class="cn.escheduler.server.master.log.MasterLogFilter">
 			<level>INFO</level>
 		</filter>

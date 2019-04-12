@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage="Usage: escheduler-daemon.sh (start|stop) <command> "
+usage="Usage: escheduler-daemon.sh (start|stop) <command>[api-server|master-server|worker-server|alert-server] "
 
 # if no args specified, show usage
 if [ $# -le 1 ]; then
@@ -19,8 +19,14 @@ BIN_DIR=`dirname $0`
 BIN_DIR=`cd "$BIN_DIR"; pwd`
 ESCHEDULER_HOME=$BIN_DIR/..
 
-export JAVA_HOME=$JAVA_HOME
-#export JAVA_HOME=/opt/soft/jdk
+# export JAVA_HOME=/opt/soft/jdk
+JAVA="$JAVA_HOME/bin/java"
+if [[ -z "$JAVA_HOME" ]]
+then
+  #if not exists JavaHome, use java
+  export JAVA="java"
+fi
+
 export HOSTNAME=`hostname`
 
 export ESCHEDULER_PID_DIR=/tmp/
@@ -28,29 +34,31 @@ export ESCHEDULER_LOG_DIR=$ESCHEDULER_HOME/logs
 export ESCHEDULER_CONF_DIR=$ESCHEDULER_HOME/conf
 export ESCHEDULER_LIB_JARS=$ESCHEDULER_HOME/lib/*
 
-export ESCHEDULER_OPTS="-server -Xmx16g -Xms4g -Xss512k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+export ESCHEDULER_OPTS="-server -Descheduler.home=$ESCHEDULER_HOME"
 export STOP_TIMEOUT=5
 
 if [ ! -d "$ESCHEDULER_LOG_DIR" ]; then
   mkdir $ESCHEDULER_LOG_DIR
 fi
 
-log=$ESCHEDULER_LOG_DIR/escheduler-$command-$HOSTNAME.out
+logFile="escheduler-$command-$HOSTNAME.log"
+log=$ESCHEDULER_LOG_DIR/$logFile
 pid=$ESCHEDULER_LOG_DIR/escheduler-$command.pid
 
+export ESCHEDULER_OPTS="$ESCHEDULER_OPTS -Dlog.file=$logFile"
 cd $ESCHEDULER_HOME
 
 if [ "$command" = "api-server" ]; then
-  LOG_FILE="-Dlogging.config=conf/apiserver_logback.xml"
+  LOG_FILE="-Dlogging.config=$ESCHEDULER_HOME/conf/apiserver_logback.xml"
   CLASS=cn.escheduler.api.ApiApplicationServer
 elif [ "$command" = "master-server" ]; then
-  LOG_FILE="-Dspring.config.location=conf/application_master.properties -Ddruid.mysql.usePingMethod=false"
+  LOG_FILE="-Dspring.config.location=$ESCHEDULER_HOME/conf/application_master.properties -Ddruid.mysql.usePingMethod=false"
   CLASS=cn.escheduler.server.master.MasterServer
 elif [ "$command" = "worker-server" ]; then
-  LOG_FILE="-Dlogback.configurationFile=conf/worker_logback.xml -Ddruid.mysql.usePingMethod=false"
+  LOG_FILE="-Dlogback.configurationFile=$ESCHEDULER_HOME/conf/worker_logback.xml -Ddruid.mysql.usePingMethod=false"
   CLASS=cn.escheduler.server.worker.WorkerServer
 elif [ "$command" = "alert-server" ]; then
-  LOG_FILE="-Dlogback.configurationFile=conf/alert_logback.xml"
+  LOG_FILE="-Dlogback.configurationFile=$ESCHEDULER_HOME/conf/alert_logback.xml"
   CLASS=cn.escheduler.alert.AlertServer
 elif [ "$command" = "logger-server" ]; then
   CLASS=cn.escheduler.server.rpc.LoggerServer
@@ -74,8 +82,8 @@ case $startStop in
 
     exec_command="$LOG_FILE $ESCHEDULER_OPTS -classpath $ESCHEDULER_CONF_DIR:$ESCHEDULER_LIB_JARS $CLASS"
 
-    echo "nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 < /dev/null &"
-    nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 < /dev/null &
+    echo "exec $JAVA $exec_command"
+    $JAVA $exec_command > /dev/null 2>&1 &
     echo $! > $pid
     ;;
 
