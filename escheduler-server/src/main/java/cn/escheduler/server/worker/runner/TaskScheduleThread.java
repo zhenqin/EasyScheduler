@@ -284,7 +284,10 @@ public class TaskScheduleThread implements Callable<Boolean> {
      * @param projectRes
      * @param logger
      */
-    private void copyHdfsToLocal(ProcessDao processDao, String execLocalPath, List<String> projectRes, Logger logger) throws IOException {
+    private void copyHdfsToLocal(ProcessDao processDao,
+                                 String execLocalPath,
+                                 List<String> projectRes,
+                                 Logger logger) throws IOException {
         for (String res : projectRes) {
             File resFile = new File(execLocalPath, res);
             if (!resFile.exists()) {

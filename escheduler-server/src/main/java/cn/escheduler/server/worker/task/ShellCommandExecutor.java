@@ -75,7 +75,7 @@ public class ShellCommandExecutor extends AbstractCommandExecutor {
             logger.info("create command file:{}", commandFile);
 
             StringBuilder sb = new StringBuilder();
-            sb.append("#!/bin/sh\n");
+            sb.append("#!/usr/bin/env bash\n");
             sb.append("BASEDIR=$(cd `dirname $0`; pwd)\n");
             sb.append("cd $BASEDIR\n");
 

@@ -142,8 +142,8 @@ public class ShellTask extends AbstractTask {
     Set<PosixFilePermission> perms = PosixFilePermissions.fromString(Constants.RWXR_XR_X);
     FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
 
+    // 把执行脚本写入到本地
     Files.createFile(path, attr);
-
     Files.write(path, shellParameters.getRawScript().getBytes(), StandardOpenOption.APPEND);
 
     return fileName;

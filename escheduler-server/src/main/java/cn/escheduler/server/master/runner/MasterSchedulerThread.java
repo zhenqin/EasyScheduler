@@ -72,12 +72,14 @@ public class MasterSchedulerThread implements Runnable {
             InterProcessMutex mutex = null;
             try {
 
+                //检查是否有充足的资源，有才执行调度
                 if(OSUtils.checkResource(conf, true)){
                     if (zkMasterClient.getZkClient().getState() == CuratorFrameworkState.STARTED) {
 
                         // create distributed lock with the root node path of the lock space as /escheduler/lock/failover/master
                         String znodeLock = zkMasterClient.getMasterLockPath();
 
+                        // 获得一个全局锁
                         mutex = new InterProcessMutex(zkMasterClient.getZkClient(), znodeLock);
                         mutex.acquire();
 

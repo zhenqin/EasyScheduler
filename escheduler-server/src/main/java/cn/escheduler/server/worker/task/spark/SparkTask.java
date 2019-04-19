@@ -29,7 +29,9 @@ import cn.escheduler.server.worker.task.TaskProps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -90,9 +92,16 @@ public class SparkTask extends AbstractYarnTask {
    */
   @Override
   protected String buildCommand() {
-    List<String> args = new ArrayList<>();
+    String execute = SPARK_COMMAND;
+    // 如果配置了SaprkHome，则从Spark Home 下读取spark-submit
+    if(System.getenv("SPARK_HOME") != null){
+      //execute = System.getenv("SPARK_HOME") + "bin" + execute;
+      String sparkHome = System.getenv("SPARK_HOME");
+      execute = org.apache.commons.lang.StringUtils.join(Arrays.asList(sparkHome, "bin", SPARK_COMMAND), File.separator);
+    }
 
-    args.add(SPARK_COMMAND);
+    List<String> args = new ArrayList<>();
+    args.add(execute);
 
     // other parameters
     args.addAll(SparkArgsUtils.buildArgs(sparkParameters));
