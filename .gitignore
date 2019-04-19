@@ -33,3 +33,17 @@ yarn.lock
 package-lock.json
 config.gypi
 test/coverage
+
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.svn
+*.pyc
+
+# Package Files #
+target
+db
+tasks
+logs
