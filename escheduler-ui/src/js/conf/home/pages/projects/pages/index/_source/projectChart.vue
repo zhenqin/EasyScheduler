@@ -37,7 +37,7 @@
                           <a href="javascript:" @click="id && _goTask(item.key)" :class="id ?'links':''">{{item.value}}</a>
                         </span>
                       </td>
-                      <td><span>{{item.key}}</span></td>
+                      <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{item.key}}</span></td>
                     </tr>
                   </table>
                 </div>
@@ -63,7 +63,7 @@
                     <tr v-for="(item,$index) in processStateCountList">
                       <td><span>{{$index+1}}</span></td>
                       <td><span><a href="javascript:" @click="id && _goProcess(item.key)" :class="id ?'links':''">{{item.value}}</a></span></td>
-                      <td><span>{{item.key}}</span></td>
+                      <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{item.key}}</span></td>
                     </tr>
                   </table>
                 </div>
@@ -93,7 +93,7 @@
   import dayjs from 'dayjs'
   import { mapActions } from 'vuex'
   import { pie, bar } from './chartConfig'
-  import { stateType } from '@/conf/home/pages/projects/pages/instance/pages/list/_source/common'
+  import { stateType } from '@/conf/home/pages/projects/pages/_source/instanceConditions/common'
   import Chart from '~/@analysys/ana-charts'
   import mNoData from '@/module/components/noData/noData'
   import mSpin from '@/module/components/spin/spin'
@@ -122,7 +122,7 @@
       },
       _goTask (name) {
         this.$router.push({
-          name: 'task-instance-list',
+          name: 'task-instance',
           query: {
             stateType: _.find(stateType, ['label', name])['code'],
             startDate: this.scheduleTime[0],
@@ -271,6 +271,14 @@
         color: #333;
         font-weight: bold;
       }
+    }
+  }
+  .table-small-model {
+    .ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space:  nowrap;
+      display: block;
     }
   }
 </style>
